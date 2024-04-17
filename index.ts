@@ -1,15 +1,20 @@
 import express, { Express, Request, Response } from 'express'
+import { engine } from 'express-handlebars'
 import 'dotenv/config'
 import { createBucket, getS3Client } from './src/upload'
 import { ListBucketsCommand } from '@aws-sdk/client-s3'
 
 const app: Express = express()
 
+app.engine('handlebars', engine())
+app.set('view engine', 'handlebars')
+app.set('views', './src/views')
+
 const bucketName = `my-document-bucket-test`
 createBucket(bucketName)
 
 app.get('/', async (_: Request, res: Response) => {
-	res.send('Hello World!')
+	res.render('index', { test: 'HEY' })
 })
 
 app.post('/send', async (_: Request, res: Response) => {

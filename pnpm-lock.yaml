@@ -20,9 +20,9 @@ dependencies:
   express:
     specifier: ^4.19.2
     version: 4.19.2
-  handlebars:
-    specifier: ^4.7.8
-    version: 4.7.8
+  express-handlebars:
+    specifier: ^7.1.2
+    version: 7.1.2
   prettier:
     specifier: ^3.2.5
     version: 3.2.5
@@ -3381,6 +3381,15 @@ packages:
   /etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /express-handlebars@7.1.2:
+    resolution: {integrity: sha512-ss9d3mBChOLTEtyfzXCsxlItUxpgS3i4cb/F70G6Q5ohQzmD12XB4x/Y9U6YboeeYBJZt7WQ5yUNu7ZSQ/EGyQ==}
+    engines: {node: '>=v16'}
+    dependencies:
+      glob: 10.3.10
+      graceful-fs: 4.2.11
+      handlebars: 4.7.8
     dev: false
 
   /express@4.19.2:
