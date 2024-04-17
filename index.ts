@@ -5,19 +5,36 @@ import { ListBucketsCommand } from '@aws-sdk/client-s3'
 
 const app: Express = express()
 
-const bucketName = `test-bucket-${Date.now()}`
+const bucketName = `my-document-bucket-test`
 createBucket(bucketName)
-createBucket(bucketName + 2)
 
 app.get('/', async (_: Request, res: Response) => {
-	const command = new ListBucketsCommand({})
-
-	const client = getS3Client()
-	const { Buckets } = await client.send(command)
-	if (!Buckets) return 'no buckets'
-	console.log('Buckets: ')
-	console.log(Buckets.map(bucket => bucket.Name).join('\n'))
 	res.send('Hello World!')
+})
+
+app.post('/send', async (_: Request, res: Response) => {
+	// Post a document to s3
+	res.send('Send')
+})
+
+app.get('/list', async (_: Request, res: Response) => {
+	// List documents
+	res.send('List')
+})
+
+app.get('/list-bucket', async (_: Request, res: Response) => {
+	const client = getS3Client()
+	const { Buckets } = await client.send(new ListBucketsCommand({}))
+
+	if (!Buckets) return res.send('There is no bucket')
+
+	res.send(`Buckets: ${Buckets.map(bucket => bucket.Name).join('\n')}`)
+})
+
+app.get('/document/:id', async (req: Request, res: Response) => {
+	const { id } = req.params
+	// Download a document from s3
+	res.send(`document ${id}`)
 })
 
 const port = process.env.PORT

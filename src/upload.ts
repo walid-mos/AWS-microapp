@@ -9,6 +9,8 @@ import {
 	DeleteBucketCommand,
 	paginateListObjectsV2,
 	GetObjectCommand,
+	ListBucketsCommand,
+	BucketAlreadyOwnedByYou,
 } from '@aws-sdk/client-s3'
 
 // A region and credentials can be declared explicitly. For example
@@ -25,13 +27,30 @@ export const getS3Client = () => {
 export const createBucket = async (bucketName: string) => {
 	// Create an Amazon S3 bucket. The epoch timestamp is appended
 	// to the name to make it unique.
-	const bucket = await s3Client.send(
-		new CreateBucketCommand({
-			Bucket: bucketName,
-		}),
-	)
+	try {
+		const bucket = await s3Client.send(
+			new CreateBucketCommand({
+				Bucket: bucketName,
+			}),
+		)
 
-	return bucket
+		return bucket
+	} catch (err) {
+		if (err instanceof BucketAlreadyOwnedByYou) {
+			const buckets = await s3Client.send(new ListBucketsCommand())
+			const bucket = buckets.Buckets?.find(
+				({ Name }) => Name === bucketName,
+			)
+			console.log({
+				bucketName,
+				bucketsNames: buckets.Buckets?.map(({ Name }) => Name),
+			})
+			if (bucket) {
+				return bucket
+			}
+		}
+		throw new Error(`Problem with s3 Bucket: ${err}`)
+	}
 }
 
 export const sendDocument = async (bucketName: string) => {
