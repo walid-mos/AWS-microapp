@@ -11,6 +11,7 @@ import {
 	GetObjectCommand,
 	ListBucketsCommand,
 	BucketAlreadyOwnedByYou,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3'
 
 // A region and credentials can be declared explicitly. For example
@@ -53,31 +54,37 @@ export const createBucket = async (bucketName: string) => {
 	}
 }
 
-export const sendDocument = async (bucketName: string) => {
+export const sendDocument = async (
+	bucketName: string,
+	Key: string,
+	Body: Buffer,
+) => {
 	// Put an object into an Amazon S3 bucket.
 	await s3Client.send(
 		new PutObjectCommand({
 			Bucket: bucketName,
-			Key: 'my-first-object.txt',
-			Body: 'Hello JavaScript SDK!',
+			Key,
+			Body,
 		}),
 	)
 }
 
-export const getDocument = async (bucketName: string) => {
-	// Read the object.
-	const { Body } = await s3Client.send(
-		new GetObjectCommand({
+export const listDocuments = async (bucketName: string) => {
+	return await s3Client.send(
+		new ListObjectsV2Command({
 			Bucket: bucketName,
-			Key: 'my-first-object.txt',
 		}),
 	)
+}
 
-	if (!Body) throw new Error('S3 Client sent an error')
-
-	console.log(await Body.transformToString())
-
-	return Body
+export const getDocument = async (bucketName: string, Key: string) => {
+	// Read the object.
+	return await s3Client.send(
+		new GetObjectCommand({
+			Bucket: bucketName,
+			Key,
+		}),
+	)
 }
 
 export const deleteBucket = async (bucketName: string) => {
